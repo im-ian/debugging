@@ -18,9 +18,16 @@ const upload = multer({ storage: storage });
 
 app.use(express.static("public"));
 
+const ALLOWED_FILE_TYPES = [".jpg", ".png", ".jpeg", ".gif"];
+
 app.post("/upload", upload.single("file"), (req, res) => {
   if (!req.file) {
     return res.status(400).send("No file uploaded.");
+  }
+
+  const fileExtension = path.extname(req.file.originalname);
+  if (!ALLOWED_FILE_TYPES.includes(fileExtension)) {
+    return res.status(400).send("File type is not allowed.");
   }
 
   res.json({
